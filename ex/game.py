@@ -13,6 +13,8 @@ STEP = 10
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 
+# Генерацию спрайтов лучше оформить в виде отдельной функции, которая
+# создаст все элементы игрового поля и вернет спрайт игрока.
 player = None
 all_sprites = pygame.sprite.Group()
 tiles_group = pygame.sprite.Group()
@@ -47,6 +49,7 @@ def load_level(filename):
 
     # дополняем каждую строку пустыми клетками ('.')    
     return list(map(lambda x: x.ljust(max_width, '.'), level_map))
+    # Метод ljust() дополняет строку до определенной длины символами
 
 
 def generate_level(level):
@@ -97,12 +100,14 @@ def start_screen():
         pygame.display.flip()
         clock.tick(FPS)
 
-
+# Изображения тайлов (клеточек) удобно хранить в словаре.
 tile_images = {'wall': load_image('box.png'), 'empty': load_image('grass.png')}
 player_image = load_image('mario.png')
 
 tile_width = tile_height = 50
-
+    # Сначала отрисовать неподвижные элементы карты один раз на отдельном Surface-e
+    # А после выводить их как одну общую картинку
+    # 1) сгенерировать соответствующие спрайты, 2) проверять столкновения.
 
 class Tile(pygame.sprite.Sprite):
     def __init__(self, tile_type, pos_x, pos_y):
@@ -128,7 +133,7 @@ class Camera:
     # сдвинуть объект obj на смещение камеры
     def apply(self, obj):
         obj.rect.x += self.dx
-        # вычислим координату клитки, если она уехала влево за границу экрана
+        # вычислим координату клетки, если она уехала влево за границу экрана
         if obj.rect.x < -obj.rect.width:
             obj.rect.x += (self.field_size[0] + 1) * obj.rect.width
         # вычислим координату клитки, если она уехала вправо за границу экрана            
@@ -176,6 +181,7 @@ while running:
         camera.apply(sprite)
 
     screen.fill(pygame.Color(0, 0, 0))
+    # надо не забыть добавить отрисовку групп спрайтов в игровой цикл.
     tiles_group.draw(screen)
     player_group.draw(screen)
 
